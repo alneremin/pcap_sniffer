@@ -6,7 +6,7 @@
 #include <netinet/in.h>
 #include <netinet/if_ether.h>
 
-// STL
+//
 #include <string>
 #include <fstream>
 #include <unistd.h>
@@ -15,6 +15,7 @@
 // manipulate date
 #include <chrono>
 #include <cstdint>
+#include <iomanip>
 
 // write data
 #include <iostream>
@@ -24,6 +25,7 @@
 #define SNIFF_BUFFER BUFSIZ
 void handler(u_char *args, const struct pcap_pkthdr *header, const u_char *packet);
 int64_t get_current_time();
+std::string get_current_time_as_string();
 void dump_hex(const void* data, size_t size);
 
 // enum class DUMP_SOURCE { DUMP_FILE, DUMP_SCREEN };

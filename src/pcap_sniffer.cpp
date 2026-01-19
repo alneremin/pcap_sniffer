@@ -59,6 +59,13 @@ std::string PcapSniffer::LoadData(std::string filter_path)
 
 void PcapSniffer::AddWriter(std::string output_path)
 {
+    std::string pattern = "$(time)";
+    size_t pos = output_path.find("$(time)");
+
+    if (pos != std::string::npos) {
+        output_path.replace(pos, pattern.length(), get_current_time_as_string());
+    }
+
     writer_ = std::make_shared<CsvWriter>(output_path);
 }
 
@@ -67,7 +74,7 @@ void PcapSniffer::Start()
     if (!IsLoaded())
         throw std::runtime_error("Module has been not loaded!\n Call Load() function");
 
-    int total_packet_count = 20000;
+    int total_packet_count = -1;
     u_char *my_arguments = NULL;
 
     pcap_loop(handle_, 
@@ -231,4 +238,15 @@ int64_t get_current_time()
     int64_t total_nanoseconds = ns.count();
 
     return total_nanoseconds;
+}
+
+std::string get_current_time_as_string() 
+{
+    std::time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+
+    std::tm* local_tm = std::localtime(&now);
+
+    std::ostringstream oss;
+    oss << std::put_time(local_tm, "%Y-%m-%d %H:%M:%S");
+    return oss.str();
 }
