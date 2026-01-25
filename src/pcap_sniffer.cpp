@@ -1,7 +1,7 @@
 
 #include "pcap_sniffer.h"
 
-PcapSniffer::PcapSniffer() {}
+PcapSniffer::PcapSniffer(): dump_interval_(1.0), payload_length_(0), dump_hex_(false) {}
 
 bool PcapSniffer::IsLoaded()
 { 
@@ -67,6 +67,7 @@ void PcapSniffer::AddWriter(std::string output_path)
     }
 
     writer_ = std::make_shared<CsvWriter>(output_path);
+    std::cout << "Writer output path: " << output_path << std::endl;
 }
 
 void PcapSniffer::Start()
@@ -77,6 +78,7 @@ void PcapSniffer::Start()
     int total_packet_count = -1;
     u_char *my_arguments = NULL;
 
+    start_time_ = get_current_time_sec();
     pcap_loop(handle_, 
               total_packet_count,
               handler,
@@ -166,29 +168,38 @@ void PcapSniffer::Handler(
        the IP header length. We multiply by four again to get a
        byte count. */
     tcp_header_length = tcp_header_length * 4;
-    printf("TCP header length in bytes: %d\n", tcp_header_length);
+    // printf("TCP header length in bytes: %d\n", tcp_header_length);
 
     /* Add up all the header sizes to find the payload offset */
     int total_headers_size = ethernet_header_length+ip_header_length+tcp_header_length;
-    printf("Size of all headers combined: %d bytes\n", total_headers_size);
+    // printf("Size of all headers combined: %d bytes\n", total_headers_size);
     payload_length = header->caplen -
         (ethernet_header_length + ip_header_length + tcp_header_length);
-    printf("Payload size: %d bytes\n", payload_length);
+    
+    if (payload_length)
+        std::cout << "Payload size: " << payload_length << " bytes" << std::endl;
     payload = packet + total_headers_size;
-    printf("Memory address where payload begins: %p\n\n", payload);
+    // printf("Memory address where payload begins: %p\n\n", payload);
 
     /* Print payload in ASCII */
-    int payload_len = header->len - total_headers_size;
+    // int payload_len = header->len - total_headers_size;
+    if (dump_hex_)
+        dump_hex(payload, payload_length);
 
-    if (payload_length > 0) {
+    payload_length_ += payload_length;
+    if (get_current_time_sec() - start_time_ > dump_interval_) 
+    {
+        std::cout << "Total payload size: " << payload_length_ << std::endl;
+        start_time_ = get_current_time_sec();
+
         if (writer_)
             writer_->Write({
-                std::to_string(get_current_time()),
+                std::to_string(start_time_),
                 // std::to_string(total_headers_size),
-                std::to_string(payload_length),
+                std::to_string(payload_length_),
             });
-        else
-            dump_hex(payload, payload_length);
+
+        payload_length_ = 0;
     }
     
     return;
@@ -238,6 +249,19 @@ int64_t get_current_time()
     int64_t total_nanoseconds = ns.count();
 
     return total_nanoseconds;
+}
+
+double get_current_time_sec()
+{
+    // Get the current time point with nanosecond precision
+    auto now = std::chrono::time_point_cast<std::chrono::nanoseconds>(
+        std::chrono::system_clock::now()
+    );
+
+    // Get the duration since the epoch (1970-01-01 00:00:00 UTC)
+    std::chrono::nanoseconds ns = now.time_since_epoch();
+
+    return get_current_time() / 1000000000;
 }
 
 std::string get_current_time_as_string() 

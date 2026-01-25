@@ -4,16 +4,17 @@
 ```bash
 sudo apt install libpcap-dev
 
-mkdir -p ~/your_ws/src
-cd ~/your_ws/src
+
 git clone https://github.com/alneremin/pcap_sniffer.git
-cd ..
-catkin build
+cd pcap_sniffer
+mkdir -p build && cd build
+cmake ..
+make
 ```
 
 # Run
 
 ```bash
-source your_ws/devel/setup.bash
-sudo ~/your_ws/devel/.private/pcap_sniffer/lib/pcap_sniffer/pcap_sniffer lo ~/your_ws/src/pcap_sniffer/config/tcp_filter.pcap ~/your_ws/src/pcap_sniffer/output_\$\(time\).csv
+cd pcap_sniffer
+sudo ./build/pcap_sniffer wlo1 --filter ./config/tcp_filter.pcap --output ./output_\$\(time\).csv --interval 1.0 --dumphex true
 ```

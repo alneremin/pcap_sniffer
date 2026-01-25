@@ -25,6 +25,7 @@
 #define SNIFF_BUFFER BUFSIZ
 void handler(u_char *args, const struct pcap_pkthdr *header, const u_char *packet);
 int64_t get_current_time();
+double get_current_time_sec();
 std::string get_current_time_as_string();
 void dump_hex(const void* data, size_t size);
 
@@ -42,6 +43,10 @@ class PcapSniffer
         pcap_handler* func_;
         bool connected_ = false;
         std::shared_ptr<CsvWriter> writer_;
+        double dump_interval_;
+        double start_time_;
+        int64_t payload_length_;
+        bool dump_hex_;
     public:
         void Connect(std::string device);
         void LoadFilter(std::string filter_path);
@@ -55,6 +60,12 @@ class PcapSniffer
             const struct pcap_pkthdr *header,
             const u_char *packet
         );
+
+        void SetDumpInterval(double interval) { dump_interval_ = interval; }
+        double GetDumpInterval() { return dump_interval_; }
+
+        void SetDumpHex(bool dump_hex) { dump_hex_ = dump_hex; }
+        bool DumpHex() { return dump_hex_; }
 
         static std::shared_ptr<PcapSniffer> GetSniffer();
 };
