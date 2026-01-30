@@ -194,7 +194,7 @@ void PcapSniffer::Handler(
 
         if (writer_)
             writer_->Write({
-                std::to_string(start_time_),
+                std::to_string(get_current_time()),
                 // std::to_string(total_headers_size),
                 std::to_string(payload_length_),
             });
