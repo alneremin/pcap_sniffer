@@ -2,8 +2,11 @@
 # Install
 
 ```bash
-sudo apt install libpcap-dev
 
+# check if pcap is installed
+dpkg -l libpcap0.8-dev
+# else
+sudo apt install libpcap-dev
 
 git clone https://github.com/alneremin/pcap_sniffer.git
 cd pcap_sniffer
