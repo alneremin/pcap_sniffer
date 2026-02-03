@@ -7,6 +7,8 @@
 dpkg -l libpcap0.8-dev
 # else
 sudo apt install libpcap-dev
+sudo apt install libnl-genl-3-dev
+# or download later in build process
 
 git clone https://github.com/alneremin/pcap_sniffer.git
 cd pcap_sniffer

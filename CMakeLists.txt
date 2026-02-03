@@ -5,7 +5,15 @@ SET(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_BUILD_TYPE Debug)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-find_package(PCAP REQUIRED)
+find_package(PCAP)
+
+if(PCAP_FOUND)
+  message("Pcap is found (PCAP_INCLUDE_DIR==${PCAP_INCLUDE_DIR})")
+else()
+  set(BUILD_PCAP TRUE)
+endif()
+
+add_subdirectory(external)
 
 include_directories(
   "include/pcap_sniffer"
