@@ -189,12 +189,13 @@ void PcapSniffer::Handler(
     payload_length_ += payload_length;
     if (get_current_time_sec() - start_time_ > dump_interval_) 
     {
-        std::cout << "Total payload size: " << payload_length_ << std::endl;
         start_time_ = get_current_time_sec();
+        auto current_time = get_current_time();
+        std::cout << "Total payload size: " << payload_length_ << ", Time: " << current_time << std::endl;
 
         if (writer_)
             writer_->Write({
-                std::to_string(get_current_time()),
+                std::to_string(current_time),
                 // std::to_string(total_headers_size),
                 std::to_string(payload_length_),
             });
