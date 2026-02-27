@@ -1,4 +1,10 @@
 
+# Timezone setting in docker
+```shell
+rm -rf /etc/localtime
+ln /usr/share/zoneinfo/Europe/Moscow /etc/localtime
+```
+
 # Install
 
 ```bash
@@ -30,4 +36,10 @@ To compare metrics with each other you need to align the time on each computer
 > In advance you need install OpenSSH server: ```sudo apt update && sudo apt install openssh-server -y```
 ```bash
 sudo date --set="$(ssh name@%IP_v4% date +"%Y-%m-%dT%H:%M:%S")"
+```
+
+# Bluetooth sniffing
+```bash
+cd pcap_sniffer
+sudo ./scripts/bt_mon.sh 1 ./outputs/bt/output_$(date +%Y-%m-%d' '%H:%M:%S).csv
 ```
