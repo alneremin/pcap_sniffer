@@ -41,5 +41,5 @@ sudo date --set="$(ssh name@%IP_v4% date +"%Y-%m-%dT%H:%M:%S")"
 # Bluetooth sniffing
 ```bash
 cd pcap_sniffer
-sudo ./scripts/bt_mon.sh 1 ./outputs/bt/output_$(date +%Y-%m-%d' '%H:%M:%S).csv
+sudo ./scripts/bt_mon.sh 1 "outputs/bt/output_$(date +%Y-%m-%d' '%H:%M:%S).csv"
 ```
